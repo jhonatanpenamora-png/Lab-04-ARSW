@@ -6,6 +6,7 @@ import edu.eci.arsw.collabboard.domain.model.BoardElement;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class BoardApplicationService {
@@ -17,8 +18,8 @@ public class BoardApplicationService {
     }
 
     public Board createBoard(String name) {
-        // TODO LAB-04: generate the id, enforce the use-case rules and persist through the port.
-        throw new UnsupportedOperationException("TODO LAB-04: createBoard");
+        Board board = new Board(UUID.randomUUID().toString(), name, List.of());
+        return repository.save(board);
     }
 
     public Board getBoard(String boardId) {
