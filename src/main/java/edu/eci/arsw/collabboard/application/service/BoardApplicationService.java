@@ -1,5 +1,6 @@
 package edu.eci.arsw.collabboard.application.service;
 
+import edu.eci.arsw.collabboard.application.exception.BoardNotFoundException;
 import edu.eci.arsw.collabboard.application.port.out.BoardRepository;
 import edu.eci.arsw.collabboard.domain.model.Board;
 import edu.eci.arsw.collabboard.domain.model.BoardElement;
@@ -23,8 +24,8 @@ public class BoardApplicationService {
     }
 
     public Board getBoard(String boardId) {
-        // TODO LAB-04: use a concrete application exception when the board does not exist.
-        throw new UnsupportedOperationException("TODO LAB-04: getBoard");
+        return repository.findById(boardId)
+                .orElseThrow(() -> new BoardNotFoundException(boardId));
     }
 
     public Board replaceBoard(String boardId, String name, List<BoardElement> elements) {
