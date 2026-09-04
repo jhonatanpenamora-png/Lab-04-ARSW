@@ -29,7 +29,9 @@ public class BoardApplicationService {
     }
 
     public Board replaceBoard(String boardId, String name, List<BoardElement> elements) {
-        // TODO LAB-04: keep the existing identity and replace only a board that already exists.
-        throw new UnsupportedOperationException("TODO LAB-04: replaceBoard");
+        if (!repository.existsById(boardId)) {
+            throw new BoardNotFoundException(boardId);
+        }
+        return repository.save(new Board(boardId, name, elements));
     }
 }
