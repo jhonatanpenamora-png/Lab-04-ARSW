@@ -72,7 +72,27 @@ http://localhost:8080/
 mvn test
 ```
 
-The included specification tests are disabled initially. Enable them progressively as you implement the required behavior.
+## Try it manually
+
+With the application running (`mvn spring-boot:run`):
+
+```bash
+# Create a board
+curl -i -X POST http://localhost:8080/api/boards \
+  -H "Content-Type: application/json" \
+  -d '{"name":"Architecture Board"}'
+
+# Get it back (replace ID with the one returned above)
+curl -i http://localhost:8080/api/boards/ID
+
+# Replace its state
+curl -i -X PUT http://localhost:8080/api/boards/ID \
+  -H "Content-Type: application/json" \
+  -d '{"name":"Updated Board","elements":[{"id":"element-1","type":"TEXT","x":20,"y":30,"width":160,"height":40,"text":"Application Service"}]}'
+
+# Unknown board -> uniform 404
+curl -i http://localhost:8080/api/boards/no-existe
+```
 
 ## Continuity rule
 

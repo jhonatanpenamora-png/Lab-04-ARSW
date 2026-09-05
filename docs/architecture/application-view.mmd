@@ -1,0 +1,24 @@
+flowchart LR
+    Client["HTTP Client"]
+
+    subgraph Web["Web layer (infrastructure.web.rest)"]
+        Controller["BoardRestController<br/>REST interface"]
+        ErrorHandler["GlobalExceptionHandler<br/>uniform ApiError mapping"]
+    end
+
+    subgraph App["Application layer"]
+        Service["BoardApplicationService<br/>create / get / replace use cases"]
+        Port["BoardRepository<br/>&lt;&lt;port&gt;&gt;"]
+    end
+
+    subgraph Infra["Persistence adapter (infrastructure.persistence)"]
+        Adapter["InMemoryBoardRepository"]
+        Store[("In-memory board map")]
+    end
+
+    Client -->|"POST/GET/PUT /api/boards"| Controller
+    Controller -->|"delegates use case"| Service
+    Controller -.->|"exceptions"| ErrorHandler
+    Service -->|"depends on abstraction"| Port
+    Adapter -->|"implements"| Port
+    Adapter -->|"reads/writes"| Store
