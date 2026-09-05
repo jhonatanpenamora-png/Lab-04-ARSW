@@ -1,0 +1,57 @@
+classDiagram
+    direction LR
+
+    class BoardRestController {
+        -BoardApplicationService service
+        +create(CreateBoardRequest) ResponseEntity~Board~
+        +get(String) Board
+        +replace(String, ReplaceBoardRequest) Board
+    }
+
+    class BoardApplicationService {
+        -BoardRepository repository
+        +createBoard(String) Board
+        +getBoard(String) Board
+        +replaceBoard(String, String, List~BoardElement~) Board
+    }
+
+    class BoardRepository {
+        <<interface>>
+        +save(Board) Board
+        +findById(String) Optional~Board~
+        +existsById(String) boolean
+    }
+
+    class InMemoryBoardRepository {
+        -Map~String, Board~ boards
+    }
+
+    class Board {
+        +String id
+        +String name
+        +List~BoardElement~ elements
+    }
+
+    class BoardElement {
+        +String id
+        +ElementType type
+        +double x
+        +double y
+        +double width
+        +double height
+        +String text
+    }
+
+    class ElementType {
+        <<enumeration>>
+        RECTANGLE
+        TEXT
+    }
+
+    BoardRestController --> BoardApplicationService : delegates to
+    BoardApplicationService --> BoardRepository : uses
+    InMemoryBoardRepository ..|> BoardRepository : implements
+    BoardApplicationService --> Board : creates/returns
+    BoardRepository --> Board : persists
+    Board "1" *-- "0..*" BoardElement : elements
+    BoardElement --> ElementType : type
