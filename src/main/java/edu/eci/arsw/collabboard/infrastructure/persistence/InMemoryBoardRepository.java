@@ -21,14 +21,14 @@ public class InMemoryBoardRepository implements BoardRepository {
 
     @Override
     public Board save(Board board) {
-        // TODO LAB-04: decide and document the semantics of save/replace.
+        // Map.put provides the save-or-replace semantics required by the port.
         boards.put(board.id(), board);
         return board;
     }
 
     @Override
     public Optional<Board> findById(String boardId) {
-        // TODO LAB-04: validate whether defensive copying is necessary with the current immutable model.
+        // Board is an immutable record and defensively copies its elements list.
         return Optional.ofNullable(boards.get(boardId));
     }
 
