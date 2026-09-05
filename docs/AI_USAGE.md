@@ -15,8 +15,8 @@ Declaring AI use does not reduce the grade. You must be able to explain and vali
 
 The team reviewed every changed file, executed `mvn clean test`, exercised the three endpoints manually and confirmed that the architecture documents match the delivered source code.
 
-> Integrante 1: [Pendiente - se agregará tras merge de feature/domain-persistence]
+> Integrante 1: (Juan Murcia) [Pendiente - se agregará tras merge de feature/domain-persistence]
 
-> Integrante 2: GitHub Copilot / Copilot Chat usado para implementación de casos de uso, pruebas y redacción de ADR. Todas las decisiones validadas con `mvn test` y revisión de código contra la solución de referencia.
+> Integrante 2: (Jhonatan Peña) GitHub Copilot / Copilot Chat usado para implementación de casos de uso, pruebas y redacción de ADR. Todas las decisiones validadas con `mvn test` y revisión de código contra la solución de referencia.
 
 > Integrante 3 (Jhonatan David Madero Riaño): Claude Code usado para completar la capa REST — remoción del TODO del controlador, manejo uniforme de errores (incluyendo JSON malformado) y pruebas MockMvc de éxito y error. Cada cambio se validó ejecutando `mvn test` (24/24) y comparando el contrato de errores contra `docs/api-contract.md`.
