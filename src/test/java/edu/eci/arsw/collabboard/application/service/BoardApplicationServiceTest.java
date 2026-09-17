@@ -38,7 +38,7 @@ class BoardApplicationServiceTest {
         String originalId = created.id();
 
         List<BoardElement> newElements = List.of(
-                new BoardElement("elem-1", ElementType.TEXT, 10, 20, 100, 50, "Updated content")
+                new BoardElement("elem-1", ElementType.TEXT, 10, 20, 100, 50, "Updated content", null, null)
         );
 
         Board replaced = service.replaceBoard(originalId, "Updated Name", newElements);
@@ -52,7 +52,7 @@ class BoardApplicationServiceTest {
     @Test
     void shouldFailWhenReplacingNonExistentBoard() {
         List<BoardElement> elements = List.of(
-                new BoardElement("elem-1", ElementType.RECTANGLE, 0, 0, 10, 10, "")
+                new BoardElement("elem-1", ElementType.RECTANGLE, 0, 0, 10, 10, "", null, null)
         );
 
         assertThrows(BoardNotFoundException.class,
