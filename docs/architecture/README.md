@@ -1,19 +1,19 @@
-# Architecture Evidence — Lab 04
+# Architecture Evidence — Lab 04 / Lab 05
 
 ## 1. Application view
 
-`application-view.mmd` (source) and `application-view.svg` (rendered) show the four layers actually delivered:
+`application-view.mmd` (source) and `application-view.svg` (rendered) show the layers actually delivered, now including the Lab 5 client:
 
+- **Client (browser)** — `BoardApp` (coordinates events and use cases), `BoardApiClient` (the only module that calls `fetch`), `BoardState` (holds the `Board`, selection and connect-mode state) and `BoardView` (projects state onto the SVG canvas and reports interface gestures back to `BoardApp`). See `ADR-002-client-boundaries.md` for why these four are kept separate.
 - **Web layer** — `BoardRestController` (REST interface) and `GlobalExceptionHandler` (uniform `ApiError` mapping).
 - **Application layer** — `BoardApplicationService` (use cases) depending only on the `BoardRepository` port.
 - **Persistence adapter** — `InMemoryBoardRepository`, implementing the port over an in-memory map.
-- **Client** — any HTTP client calling `/api/boards`.
 
-The relationships mirror the dependency-inversion boundary from `ADR-001-repository-boundary.md`: the application layer never points at the adapter, only at the port.
+The relationships mirror the dependency-inversion boundary from `ADR-001-repository-boundary.md`: the application layer never points at the adapter, only at the port. On the client side, `BoardApiClient` is the only edge crossing into the REST layer — `BoardView` never talks to the network, and `BoardState` never talks to the DOM.
 
 ## 2. Class diagram
 
-`class-diagram.mmd` / `class-diagram.svg` cover `BoardRestController`, `BoardApplicationService`, `BoardRepository`, `InMemoryBoardRepository`, and the domain model (`Board`, `BoardElement`, `ElementType`) actually used by those classes.
+`class-diagram.mmd` / `class-diagram.svg` cover `BoardRestController`, `BoardApplicationService`, `BoardRepository`, `InMemoryBoardRepository`, the domain model (`Board`, `BoardElement`, `ElementType` — including the Lab 5 `CONNECTOR` type and its `sourceId`/`targetId` fields), and the four Lab 5 client modules (`BoardApp`, `BoardApiClient`, `BoardState`, `BoardView`) with their dependencies. `BoardApiClient` is the only client class pointing at `BoardRestController`.
 
 ## Quality rule
 

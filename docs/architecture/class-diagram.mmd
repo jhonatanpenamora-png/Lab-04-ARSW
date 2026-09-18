@@ -40,12 +40,48 @@ classDiagram
         +double width
         +double height
         +String text
+        +String sourceId
+        +String targetId
     }
 
     class ElementType {
         <<enumeration>>
         RECTANGLE
         TEXT
+        CONNECTOR
+    }
+
+    class BoardApp {
+        -BoardApiClient apiClient
+        -BoardState state
+        -BoardView view
+        +executeRemote(String, Function) void
+        +canEdit() boolean
+    }
+
+    class BoardApiClient {
+        +create(String) Board
+        +load(String) Board
+        +save(Board) Board
+    }
+
+    class BoardState {
+        -Board board
+        -String selectedId
+        -Interaction interaction
+        -RemoteStatus remote
+        +snapshot() Snapshot
+        +move(String, double, double) void
+        +beginConnect() void
+        +completeConnect(String) BoardElement
+        +removeSelected() void
+        +toPersistedBoard() Board
+    }
+
+    class BoardView {
+        -Snapshot rendered
+        +render(Snapshot) void
+        +on(Handlers) void
     }
 
     BoardRestController --> BoardApplicationService : delegates to
@@ -55,3 +91,10 @@ classDiagram
     BoardRepository --> Board : persists
     Board "1" *-- "0..*" BoardElement : elements
     BoardElement --> ElementType : type
+
+    BoardApp --> BoardApiClient : create/load/save
+    BoardApp --> BoardState : reads/updates
+    BoardApp --> BoardView : render(snapshot)
+    BoardView --> BoardApp : select/move/connectTarget
+    BoardApiClient --> BoardRestController : POST/GET/PUT /api/boards
+    BoardState "1" *-- "1" Board : holds
