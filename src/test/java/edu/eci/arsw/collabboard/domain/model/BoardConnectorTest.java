@@ -45,4 +45,23 @@ class BoardConnectorTest {
         var b = new BoardElement("a", ElementType.TEXT, 200, 0, 100, 30, "B", null, null);
         assertThrows(IllegalArgumentException.class, () -> new Board("board", "Demo", List.of(a, b)));
     }
+
+    @Test
+    void connectorCannotReferenceAnotherConnector() {
+        var a = new BoardElement("a", ElementType.RECTANGLE, 0, 0, 100, 60, "A", null, null);
+        var b = new BoardElement("b", ElementType.TEXT, 200, 0, 100, 30, "B", null, null);
+        var firstConnector = new BoardElement("c1", ElementType.CONNECTOR, 0, 0, 0, 0, "", "a", "b");
+        var invalidConnector = new BoardElement("c2", ElementType.CONNECTOR, 0, 0, 0, 0, "", "c1", "b");
+
+        assertThrows(IllegalArgumentException.class,
+                () -> new Board("board", "Demo", List.of(a, b, firstConnector, invalidConnector)));
+    }
+
+    @Test
+    void legacyConstructorKeepsLabFourCallersCompatible() {
+        var element = new BoardElement("a", ElementType.RECTANGLE, 0, 0, 100, 60, "A");
+
+        assertNull(element.sourceId());
+        assertNull(element.targetId());
+    }
 }

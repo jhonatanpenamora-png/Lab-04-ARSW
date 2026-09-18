@@ -69,4 +69,28 @@ class BoardRestControllerErrorTest {
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.code").value("BOARD_NOT_FOUND"));
     }
+
+    @Test
+    void replaceWithInvalidConnectorReturnsUniform400() throws Exception {
+        when(service.replaceBoard(anyString(), anyString(), anyList()))
+                .thenThrow(new IllegalArgumentException(
+                        "Connector endpoints must reference existing elements"
+                ));
+
+        mockMvc.perform(put("/api/boards/board-1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "name":"Updated",
+                                  "elements":[
+                                    {"id":"connector","type":"CONNECTOR","x":0,"y":0,"width":0,"height":0,"text":"","sourceId":"missing-a","targetId":"missing-b"}
+                                  ]
+                                }
+                                """))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value("INVALID_INPUT"))
+                .andExpect(jsonPath("$.message").value(
+                        "Connector endpoints must reference existing elements"
+                ));
+    }
 }

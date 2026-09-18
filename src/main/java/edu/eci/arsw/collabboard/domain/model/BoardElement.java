@@ -11,6 +11,11 @@ public record BoardElement(
         String sourceId,
         String targetId
 ) {
+    public BoardElement(String id, ElementType type, double x, double y,
+                        double width, double height, String text) {
+        this(id, type, x, y, width, height, text, null, null);
+    }
+
     public BoardElement {
         if (id == null || id.isBlank()) {
             throw new IllegalArgumentException("Element id is required");
