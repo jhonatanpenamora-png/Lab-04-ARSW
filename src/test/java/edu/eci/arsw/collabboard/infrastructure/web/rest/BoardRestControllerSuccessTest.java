@@ -75,4 +75,53 @@ class BoardRestControllerSuccessTest {
                 .andExpect(jsonPath("$.name").value("Updated Board"))
                 .andExpect(jsonPath("$.elements[0].id").value("element-1"));
     }
+
+    @Test
+    void getReturnsConnectorEndpointsInBoardContract() throws Exception {
+        BoardElement source = new BoardElement(
+                "source", ElementType.RECTANGLE, 20, 30, 160, 80, "API"
+        );
+        BoardElement target = new BoardElement(
+                "target", ElementType.TEXT, 300, 50, 160, 40, "Client"
+        );
+        BoardElement connector = new BoardElement(
+                "connector", ElementType.CONNECTOR, 0, 0, 0, 0, "", "source", "target"
+        );
+        Board board = new Board("board-1", "Architecture Board", List.of(source, target, connector));
+        when(service.getBoard("board-1")).thenReturn(board);
+
+        mockMvc.perform(get("/api/boards/board-1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.elements[2].type").value("CONNECTOR"))
+                .andExpect(jsonPath("$.elements[2].sourceId").value("source"))
+                .andExpect(jsonPath("$.elements[2].targetId").value("target"));
+    }
+
+    @Test
+    void replaceAcceptsCompleteBoardWithConnector() throws Exception {
+        String payload = """
+                {
+                  "name": "Updated Board",
+                  "elements": [
+                    {"id":"source","type":"RECTANGLE","x":20,"y":30,"width":160,"height":80,"text":"API","sourceId":null,"targetId":null},
+                    {"id":"target","type":"TEXT","x":300,"y":50,"width":160,"height":40,"text":"Client","sourceId":null,"targetId":null},
+                    {"id":"connector","type":"CONNECTOR","x":0,"y":0,"width":0,"height":0,"text":"","sourceId":"source","targetId":"target"}
+                  ]
+                }
+                """;
+        BoardElement source = new BoardElement("source", ElementType.RECTANGLE, 20, 30, 160, 80, "API");
+        BoardElement target = new BoardElement("target", ElementType.TEXT, 300, 50, 160, 40, "Client");
+        BoardElement connector = new BoardElement(
+                "connector", ElementType.CONNECTOR, 0, 0, 0, 0, "", "source", "target"
+        );
+        Board replaced = new Board("board-1", "Updated Board", List.of(source, target, connector));
+        when(service.replaceBoard(anyString(), anyString(), anyList())).thenReturn(replaced);
+
+        mockMvc.perform(put("/api/boards/board-1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(payload))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.elements[2].sourceId").value("source"))
+                .andExpect(jsonPath("$.elements[2].targetId").value("target"));
+    }
 }
