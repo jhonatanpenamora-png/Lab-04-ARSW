@@ -1,6 +1,6 @@
-# Lab 5 — trabajo pendiente del integrante 3
+# Lab 5 — trabajo pendiente de Jhonatan David Madero Riaño
 
-Este documento comienza donde terminan los commits de dominio y cliente web. El integrante 3 debe completar la evidencia arquitectónica y la validación final sin cambiar las responsabilidades ya implementadas.
+Este documento comienza donde terminan los commits de dominio y cliente web. Jhonatan David Madero Riaño debe completar la evidencia arquitectónica y la validación final sin cambiar las responsabilidades ya implementadas.
 
 ## Estado recibido
 

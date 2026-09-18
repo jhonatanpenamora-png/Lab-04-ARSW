@@ -57,20 +57,27 @@ At minimum, complete:
 ## Run
 
 ```bash
+mvn clean test
 mvn spring-boot:run
 ```
 
-The starter includes a small landing page at:
+Then open the interactive board UI at:
 
 ```text
 http://localhost:8080/
 ```
+
+`mvn spring-boot:run` serves the Lab 5 client (`src/main/resources/static/index.html` + `js/app.js`): create or load a board, add rectangles/text, drag them, connect two elements, and save/reload against the REST API below.
 
 ## Verify
 
 ```bash
 mvn test
 ```
+
+## Evidence
+
+`docs/evidence/lab-05-save-reload.png` / `.gif` show a full Lab 5 round trip in the browser: a board with an id, a rectangle, a text element and a connector between them, a successful save, and the same state after reloading the page and loading the board by id.
 
 ## Try it manually
 
