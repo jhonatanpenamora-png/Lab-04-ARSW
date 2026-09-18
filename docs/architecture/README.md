@@ -1,5 +1,7 @@
 # Architecture Evidence — Lab 04 / Lab 05
 
+Both diagrams use ArchiMate notation (`«Application Component»`, `«Application Interface»`, `«Data Object»`, `«Business Actor»`) rendered as Mermaid flowcharts, per the course requirement that architecture views be expressed in ArchiMate rather than plain UML.
+
 ## 1. Application view
 
 `application-view.mmd` (source) and `application-view.svg` (rendered) show the layers actually delivered, now including the Lab 5 client:
@@ -11,9 +13,9 @@
 
 The relationships mirror the dependency-inversion boundary from `ADR-001-repository-boundary.md`: the application layer never points at the adapter, only at the port. On the client side, `BoardApiClient` is the only edge crossing into the REST layer — `BoardView` never talks to the network, and `BoardState` never talks to the DOM.
 
-## 2. Class diagram
+## 2. Class / module view
 
-`class-diagram.mmd` / `class-diagram.svg` cover `BoardRestController`, `BoardApplicationService`, `BoardRepository`, `InMemoryBoardRepository`, the domain model (`Board`, `BoardElement`, `ElementType` — including the Lab 5 `CONNECTOR` type and its `sourceId`/`targetId` fields), and the four Lab 5 client modules (`BoardApp`, `BoardApiClient`, `BoardState`, `BoardView`) with their dependencies. `BoardApiClient` is the only client class pointing at `BoardRestController`.
+`class-diagram.mmd` / `class-diagram.svg` model the same components as ArchiMate `«Application Component»` boxes (`BoardApp`, `BoardApiClient`, `BoardState`, `BoardView`, `BoardRestController`, `BoardApplicationService`, `InMemoryBoardRepository`), the `BoardRepository` port as an `«Application Interface»`, and the domain records (`Board`, `BoardElement`, `ElementType` — including the Lab 5 `CONNECTOR` type and its `sourceId`/`targetId` fields) as `«Data Object»`s. Key fields and method signatures are kept inside each node label so the ArchiMate view doesn't lose the property-level detail the domain model needs. `Adapter -.->|"realizes"| Port` is the ArchiMate equivalent of "implements": the dependency still points from the service toward the port, never toward the in-memory adapter.
 
 ## Quality rule
 

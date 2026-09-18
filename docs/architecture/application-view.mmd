@@ -1,37 +1,38 @@
 flowchart LR
-    User["User<br/>browser"]
+    User["User<br/>«Business Actor»"]
 
     subgraph Browser["Client (browser, static/js)"]
-        App["BoardApp<br/>app.js — coordinates events/use cases"]
-        ApiClient["BoardApiClient<br/>api/board-api-client.js — only fetch caller"]
-        State["BoardState<br/>state/board-state.js — Board, selection, connect mode"]
-        View["BoardView<br/>ui/board-view.js — SVG projection"]
+        App["«Application Component»<br/>BoardApp<br/>app.js — coordinates events/use cases"]
+        ApiClient["«Application Component»<br/>BoardApiClient<br/>api/board-api-client.js — only fetch caller"]
+        State["«Application Component»<br/>BoardState<br/>state/board-state.js — Board, selection, connect mode"]
+        View["«Application Component»<br/>BoardView<br/>ui/board-view.js — SVG projection"]
+        DOM["«Technology Interface»<br/>SVG canvas"]
     end
 
     subgraph Web["Web layer (infrastructure.web.rest)"]
-        Controller["BoardRestController<br/>REST interface"]
-        ErrorHandler["GlobalExceptionHandler<br/>uniform ApiError mapping"]
+        Controller["«Application Component»<br/>BoardRestController<br/>REST interface"]
+        ErrorHandler["«Application Component»<br/>GlobalExceptionHandler<br/>uniform ApiError mapping"]
     end
 
     subgraph App2["Application layer"]
-        Service["BoardApplicationService<br/>create / get / replace use cases"]
-        Port["BoardRepository<br/>&lt;&lt;port&gt;&gt;"]
+        Service["«Application Component»<br/>BoardApplicationService<br/>create / get / replace use cases"]
+        Port["«Application Interface»<br/>BoardRepository"]
     end
 
     subgraph Infra["Persistence adapter (infrastructure.persistence)"]
-        Adapter["InMemoryBoardRepository"]
-        Store[("In-memory board map")]
+        Adapter["«Application Component»<br/>InMemoryBoardRepository"]
+        Store[("«Data Object»<br/>In-memory board map")]
     end
 
     User -->|"interacts with"| App
     App -->|"reads/updates"| State
     App -->|"render(snapshot)"| View
-    View -.->|"select/move/connectTarget"| App
-    View -->|"projects onto"| DOM["SVG canvas"]
+    View -.->|"flow: select/move/connectTarget"| App
+    View -->|"projects onto"| DOM
     App -->|"create/load/save"| ApiClient
-    ApiClient -->|"POST/GET/PUT /api/boards"| Controller
-    Controller -->|"delegates use case"| Service
-    Controller -.->|"exceptions"| ErrorHandler
-    Service -->|"depends on abstraction"| Port
-    Adapter -->|"implements"| Port
-    Adapter -->|"reads/writes"| Store
+    ApiClient -->|"triggering: POST/GET/PUT /api/boards"| Controller
+    Controller -->|"triggering"| Service
+    Controller -.->|"flow: exceptions"| ErrorHandler
+    Service -->|"serving"| Port
+    Adapter -.->|"realizes"| Port
+    Adapter -->|"accesses"| Store
