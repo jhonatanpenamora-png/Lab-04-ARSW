@@ -1,57 +1,46 @@
-classDiagram
-    direction LR
+flowchart LR
+    User["User<br/>«Business Actor»"]
 
-    class BoardRestController {
-        -BoardApplicationService service
-        +create(CreateBoardRequest) ResponseEntity~Board~
-        +get(String) Board
-        +replace(String, ReplaceBoardRequest) Board
-    }
+    subgraph Browser["Client (browser, static/js)"]
+        App["«Application Component»<br/>BoardApp<br/>executeRemote(label, op)<br/>canEdit()"]
+        ApiClient["«Application Component»<br/>BoardApiClient<br/>create(name)<br/>load(id)<br/>save(board)"]
+        State["«Application Component»<br/>BoardState<br/>selectedId, interaction, remote<br/>move() / beginConnect() / completeConnect()<br/>removeSelected() / toPersistedBoard()"]
+        View["«Application Component»<br/>BoardView<br/>render(snapshot)<br/>on(handlers)"]
+    end
 
-    class BoardApplicationService {
-        -BoardRepository repository
-        +createBoard(String) Board
-        +getBoard(String) Board
-        +replaceBoard(String, String, List~BoardElement~) Board
-    }
+    subgraph Web["Web layer (infrastructure.web.rest)"]
+        Controller["«Application Component»<br/>BoardRestController<br/>create() / get() / replace()"]
+        ErrorHandler["«Application Component»<br/>GlobalExceptionHandler<br/>uniform ApiError mapping"]
+    end
 
-    class BoardRepository {
-        <<interface>>
-        +save(Board) Board
-        +findById(String) Optional~Board~
-        +existsById(String) boolean
-    }
+    subgraph AppLayer["Application layer"]
+        Service["«Application Component»<br/>BoardApplicationService<br/>createBoard() / getBoard() / replaceBoard()"]
+        Port["«Application Interface»<br/>BoardRepository<br/>save() / findById() / existsById()"]
+    end
 
-    class InMemoryBoardRepository {
-        -Map~String, Board~ boards
-    }
+    subgraph Infra["Persistence adapter (infrastructure.persistence)"]
+        Adapter["«Application Component»<br/>InMemoryBoardRepository"]
+        Store[("«Data Object»<br/>In-memory board map")]
+    end
 
-    class Board {
-        +String id
-        +String name
-        +List~BoardElement~ elements
-    }
+    subgraph Domain["Domain model"]
+        BoardD["«Data Object»<br/>Board<br/>id, name, elements"]
+        ElementD["«Data Object»<br/>BoardElement<br/>id, type, x, y, width, height, text, sourceId, targetId"]
+        TypeD["«Data Object»<br/>ElementType<br/>RECTANGLE / TEXT / CONNECTOR"]
+    end
 
-    class BoardElement {
-        +String id
-        +ElementType type
-        +double x
-        +double y
-        +double width
-        +double height
-        +String text
-    }
-
-    class ElementType {
-        <<enumeration>>
-        RECTANGLE
-        TEXT
-    }
-
-    BoardRestController --> BoardApplicationService : delegates to
-    BoardApplicationService --> BoardRepository : uses
-    InMemoryBoardRepository ..|> BoardRepository : implements
-    BoardApplicationService --> Board : creates/returns
-    BoardRepository --> Board : persists
-    Board "1" *-- "0..*" BoardElement : elements
-    BoardElement --> ElementType : type
+    User -->|"interacts with"| App
+    App -->|"reads/updates"| State
+    App -->|"render(snapshot)"| View
+    View -.->|"flow: select/move/connectTarget"| App
+    App -->|"create/load/save"| ApiClient
+    ApiClient -->|"triggering: POST/GET/PUT /api/boards"| Controller
+    Controller -->|"triggering"| Service
+    Controller -.->|"flow: exceptions"| ErrorHandler
+    Service -->|"serving"| Port
+    Adapter -.->|"realizes"| Port
+    Adapter -->|"accesses"| Store
+    State -->|"holds"| BoardD
+    Service -->|"accesses"| BoardD
+    BoardD -->|"composition: 0..* elements"| ElementD
+    ElementD -->|"accesses"| TypeD
